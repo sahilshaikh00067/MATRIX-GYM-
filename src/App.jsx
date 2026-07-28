@@ -448,7 +448,7 @@ function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }} onClick={() => go('home')}>
             <div style={{ width: 38, height: 38, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <div style={{ position: 'absolute', inset: 0, border: '2px solid var(--gold)', transform: 'rotate(45deg)', borderRadius: 4, boxShadow: '0 0 18px var(--gold-glow)' }} />
-              <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 13, position: 'relative', zIndex: 1 }}>A</span>
+              <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 13, position: 'relative', zIndex: 1 }}></span>
             </div>
             <div className="font-bebas" style={{ fontSize: 21, color: '#fff', letterSpacing: '0.06em', lineHeight: 1, whiteSpace: 'nowrap' }}>
               A.MATERRIX <span style={{ color: 'var(--blue)' }}>GYM</span>
@@ -1115,7 +1115,7 @@ function Footer() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
               <div style={{ width: 36, height: 36, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <div style={{ position: 'absolute', inset: 0, border: '2px solid var(--gold)', transform: 'rotate(45deg)', borderRadius: 3 }} />
-                <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 12, position: 'relative' }}>A</span>
+                <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 12, position: 'relative' }}></span>
               </div>
               <div className="font-bebas" style={{ fontSize: 18, color: '#fff', letterSpacing: '0.05em', lineHeight: 1 }}>A.MATERRIX <span style={{ color: 'var(--blue)' }}>GYM</span></div>
             </div>
