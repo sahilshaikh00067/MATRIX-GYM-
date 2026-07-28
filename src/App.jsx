@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react'
 
 // ── Image URLs (premium set) ────────────────────────────────────────────────
 const IMGS = {
@@ -20,7 +20,7 @@ const IMGS = {
   gallery1: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=90',
   gallery2: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=800&q=90',
   gallery3: 'https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=800&q=90',
-  gallery4: 'https://images.unsplash.com/photo-1523301343968-6a6ebf63c672?w=800&q=90',
+  gallery4: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1920&q=90',
   gallery5: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&q=90',
   gallery6: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=90',
   gallery7: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=800&q=90',
@@ -31,6 +31,8 @@ const IMGS = {
   showcase1:'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=900&q=90',
   showcase2:'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=900&q=90',
 }
+
+const WHATSAPP_NUMBER = '918558855435'
 
 // ── Global ultra-premium styles ─────────────────────────────────────────────
 function GlobalStyles() {
@@ -48,6 +50,7 @@ function GlobalStyles() {
         --glass:rgba(18,21,30,0.55);
         --radius-sm:8px; --radius-lg:16px; --radius-xl:26px;
         --ease:cubic-bezier(.16,1,.3,1);
+        --wa:#25D366; --wa-dark:#128C7E;
       }
       *{box-sizing:border-box;}
       html{scroll-behavior:smooth;}
@@ -68,13 +71,13 @@ function GlobalStyles() {
       @media(max-width:640px){.hide-xs{display:none !important;}}
 
       /* ── Aurora / mesh backdrop ── */
-      .aurora-field{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+      .aurora-field{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; perspective:1000px;}
       .aurora-blob{position:absolute; border-radius:50%; filter:blur(90px); opacity:0.28; will-change:transform;}
       .aurora-1{width:520px; height:520px; background:var(--blue); top:-10%; left:-8%; animation:auroraFloat1 22s ease-in-out infinite;}
       .aurora-2{width:460px; height:460px; background:var(--gold); top:35%; right:-10%; animation:auroraFloat2 26s ease-in-out infinite;}
       .aurora-3{width:400px; height:400px; background:#7c3aed; opacity:0.14; bottom:-8%; left:20%; animation:auroraFloat3 30s ease-in-out infinite;}
-      @keyframes auroraFloat1{0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(60px,80px) scale(1.15);}}
-      @keyframes auroraFloat2{0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-70px,50px) scale(1.1);}}
+      @keyframes auroraFloat1{0%,100%{transform:translate(0,0) scale(1) rotateZ(0deg);} 50%{transform:translate(60px,80px) scale(1.15) rotateZ(8deg);}}
+      @keyframes auroraFloat2{0%,100%{transform:translate(0,0) scale(1) rotateZ(0deg);} 50%{transform:translate(-70px,50px) scale(1.1) rotateZ(-6deg);}}
       @keyframes auroraFloat3{0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(40px,-60px) scale(1.2);}}
       .noise-overlay{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035; mix-blend-mode:overlay;
         background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
@@ -82,18 +85,19 @@ function GlobalStyles() {
       /* ── Preloader ── */
       .preloader{position:fixed; inset:0; z-index:200; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.25rem; transition:opacity .7s ease, visibility .7s ease;}
       .preloader.hide{opacity:0; visibility:hidden; pointer-events:none;}
-      .preloader-mark{width:64px; height:64px; position:relative;}
+      .preloader-mark{width:64px; height:64px; position:relative; transform-style:preserve-3d; animation:preloaderSpin3d 1.6s linear infinite;}
       .preloader-mark::before{content:''; position:absolute; inset:0; border:2px solid rgba(212,175,106,0.18); border-top-color:var(--gold); border-radius:50%; animation:spin 0.9s linear infinite;}
       @keyframes spin{to{transform:rotate(360deg);}}
+      @keyframes preloaderSpin3d{0%{transform:rotateY(0deg) rotateX(0deg);}100%{transform:rotateY(360deg) rotateX(15deg);}}
       .preloader-text{font-family:'Orbitron',monospace; font-size:11px; letter-spacing:0.35em; color:var(--txt-muted); text-transform:uppercase;}
 
       /* ── Scroll progress ── */
-      .scroll-progress{position:fixed; top:0; left:0; height:2px; background:linear-gradient(90deg,var(--blue),var(--gold)); z-index:100; transition:width .1s linear;}
+      .scroll-progress{position:fixed; top:0; left:0; height:2px; background:linear-gradient(90deg,var(--blue),var(--gold)); z-index:100; transition:width .1s linear; box-shadow:0 0 12px var(--gold-glow);}
 
       /* ── Nav ── */
       .nav-glass{background:rgba(4,5,9,0.72); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border-bottom:1px solid var(--border); box-shadow:0 8px 32px rgba(0,0,0,0.25);}
-      .mobile-menu{position:fixed; top:0; right:0; height:100vh; width:min(320px,85vw); background:rgba(6,7,12,0.92); backdrop-filter:blur(24px); z-index:40; transform:translateX(100%); transition:transform 0.45s var(--ease); border-left:1px solid var(--border-gold);}
-      .mobile-menu.open{transform:translateX(0);}
+      .mobile-menu{position:fixed; top:0; right:0; height:100vh; width:min(320px,85vw); background:rgba(6,7,12,0.92); backdrop-filter:blur(24px); z-index:40; transform:translateX(100%) rotateY(8deg); transition:transform 0.45s var(--ease); border-left:1px solid var(--border-gold); transform-style:preserve-3d;}
+      .mobile-menu.open{transform:translateX(0) rotateY(0deg);}
 
       /* ── Magnetic buttons ── */
       .btn-primary{position:relative; font-family:'Orbitron',monospace; font-weight:700; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; padding:0.95rem 1.9rem; border-radius:var(--radius-sm); border:none; cursor:pointer; color:#05060a; background:linear-gradient(120deg,var(--blue) 0%,var(--blue-dark) 100%); box-shadow:0 10px 30px rgba(14,165,233,0.34); transition:transform .35s var(--ease), box-shadow .35s var(--ease); will-change:transform;}
@@ -129,8 +133,8 @@ function GlobalStyles() {
       .progress-fill{height:100%; border-radius:99px; background:linear-gradient(90deg,var(--blue),var(--gold)); transition:width 1.4s var(--ease); box-shadow:0 0 12px var(--blue-glow);}
 
       /* ── About (premium 3D) ── */
-      .about-badge{position:absolute; background:var(--glass); backdrop-filter:blur(14px); border:1px solid var(--border-gold); border-radius:var(--radius-lg); padding:1.1rem 1.4rem; box-shadow:0 18px 46px rgba(0,0,0,0.6), 0 0 30px var(--gold-glow); z-index:3; animation:badgeFloat 4.2s ease-in-out infinite;}
-      @keyframes badgeFloat{0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-10px) rotate(1deg);}}
+      .about-badge{position:absolute; background:var(--glass); backdrop-filter:blur(14px); border:1px solid var(--border-gold); border-radius:var(--radius-lg); padding:1.1rem 1.4rem; box-shadow:0 18px 46px rgba(0,0,0,0.6), 0 0 30px var(--gold-glow); z-index:3; animation:badgeFloat 4.2s ease-in-out infinite; transform-style:preserve-3d;}
+      @keyframes badgeFloat{0%,100%{transform:translateY(0) rotate(-2deg) rotateX(0deg);} 50%{transform:translateY(-10px) rotate(1deg) rotateX(6deg);}}
       .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;}
       @media(max-width:900px){.about-grid{grid-template-columns:1fr; gap:5rem 0;}}
       .about-media{position:relative;}
@@ -139,7 +143,7 @@ function GlobalStyles() {
       @keyframes ringSpin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
       .about-img-main{position:relative; border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,0.6);}
       .about-img-sub{position:absolute; bottom:-28px; right:-20px; width:170px; height:170px; border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 24px 54px rgba(0,0,0,0.65); animation:subFloat 5s ease-in-out infinite;}
-      @keyframes subFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
+      @keyframes subFloat{0%,100%{transform:translateY(0) rotateZ(0deg);} 50%{transform:translateY(-8px) rotateZ(-3deg);}}
       .feature-grid{display:grid; grid-template-columns:1fr 1fr; gap:0.9rem;}
       .feature-card{position:relative; background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.2rem; overflow:hidden; transform-style:preserve-3d; transition:border-color .35s ease, box-shadow .35s ease;}
       .feature-card:hover{border-color:var(--border-blue); box-shadow:0 20px 46px rgba(0,0,0,0.5);}
@@ -160,7 +164,7 @@ function GlobalStyles() {
       @media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr;}}
 
       /* ── Services (large premium boxes) ── */
-      .services-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.75rem;}
+      .services-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.75rem; perspective:1800px;}
       @media(max-width:1100px){.services-grid{grid-template-columns:1fr 1fr;}}
       @media(max-width:640px){.services-grid{grid-template-columns:1fr;}}
       .service-card{position:relative; background:linear-gradient(160deg,rgba(255,255,255,0.035) 0%,rgba(255,255,255,0.01) 100%),linear-gradient(160deg,var(--bg4) 0%,var(--bg3) 100%); border:1px solid var(--border); border-radius:var(--radius-xl); padding:2.6rem 2.2rem; overflow:hidden; cursor:pointer; transform-style:preserve-3d; min-height:280px; display:flex; flex-direction:column;}
@@ -172,7 +176,7 @@ function GlobalStyles() {
       .service-icon-wrap{width:72px; height:72px; border-radius:20px; background:radial-gradient(circle at 30% 20%,rgba(212,175,106,0.14),rgba(255,255,255,0.02)); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; margin-bottom:1.6rem; transition:all .5s var(--ease); perspective:600px; position:relative; animation:iconFloat 3.6s ease-in-out infinite;}
       .service-card:nth-child(2n) .service-icon-wrap{animation-delay:.4s;}
       .service-card:nth-child(3n) .service-icon-wrap{animation-delay:.8s;}
-      @keyframes iconFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-7px);}}
+      @keyframes iconFloat{0%,100%{transform:translateY(0) rotateZ(0deg);} 50%{transform:translateY(-7px) rotateZ(3deg);}}
       .service-icon-wrap::after{content:''; position:absolute; inset:-6px; border-radius:24px; border:1px solid var(--border-gold); opacity:0; transition:opacity .4s ease, transform .4s ease; transform:scale(0.85);}
       .service-card:hover .service-icon-wrap{border-color:var(--gold); box-shadow:0 0 36px var(--gold-glow);}
       .service-card:hover .service-icon-wrap::after{opacity:1; transform:scale(1);}
@@ -194,7 +198,7 @@ function GlobalStyles() {
       .schedule-item:hover{background:rgba(255,255,255,0.02);}
 
       /* ── Pricing ── */
-      .pricing-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.75rem; align-items:start;}
+      .pricing-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.75rem; align-items:start; perspective:1600px;}
       @media(max-width:900px){.pricing-grid{grid-template-columns:1fr; max-width:420px; margin:0 auto;}}
       .plan-card{background:var(--glass); backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:var(--radius-xl); padding:2.1rem; transform-style:preserve-3d; transition:box-shadow .4s var(--ease);}
       .plan-card.featured{border:1px solid var(--border-gold); background:linear-gradient(165deg,rgba(18,21,30,0.7) 0%,rgba(19,23,32,0.75) 100%); box-shadow:0 28px 70px rgba(14,165,233,0.16);}
@@ -227,6 +231,18 @@ function GlobalStyles() {
       .pulse-ring{position:relative;}
       .pulse-ring::after{content:'';position:absolute; inset:-8px; border-radius:50%; border:1px solid var(--gold); animation:pulseRing 1.8s ease-out infinite;}
       @keyframes pulseRing{0%{opacity:.7; transform:scale(0.9);} 100%{opacity:0; transform:scale(1.5);}}
+
+      /* ── WhatsApp Floating Button ── */
+      .wa-float{position:fixed; right:1.4rem; bottom:1.4rem; z-index:80; display:flex; align-items:center; gap:0.7rem;}
+      .wa-btn{position:relative; width:60px; height:60px; border-radius:50%; background:linear-gradient(145deg,var(--wa) 0%,var(--wa-dark) 100%); display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; box-shadow:0 14px 34px rgba(18,140,126,0.55), 0 0 0 1px rgba(255,255,255,0.08) inset; transition:transform .35s var(--ease), box-shadow .35s var(--ease); animation:waFloat 3s ease-in-out infinite; transform-style:preserve-3d;}
+      .wa-btn:hover{transform:scale(1.1) translateY(-4px) rotateY(10deg); box-shadow:0 20px 44px rgba(18,140,126,0.7);}
+      @keyframes waFloat{0%,100%{transform:translateY(0) rotateZ(0deg);} 50%{transform:translateY(-7px) rotateZ(-2deg);}}
+      .wa-btn::before{content:''; position:absolute; inset:-6px; border-radius:50%; border:1.5px solid var(--wa); opacity:0.55; animation:waPulse 2.2s ease-out infinite;}
+      .wa-btn::after{content:''; position:absolute; inset:-14px; border-radius:50%; border:1px solid var(--wa); opacity:0.28; animation:waPulse 2.2s ease-out infinite; animation-delay:.4s;}
+      @keyframes waPulse{0%{transform:scale(0.85); opacity:.55;} 100%{transform:scale(1.5); opacity:0;}}
+      .wa-tooltip{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.04em; color:#fff; background:rgba(10,12,17,0.92); border:1px solid rgba(37,211,102,0.35); padding:0.55rem 0.9rem; border-radius:10px; white-space:nowrap; box-shadow:0 10px 26px rgba(0,0,0,0.5); opacity:0; transform:translateX(8px); transition:all .3s var(--ease); pointer-events:none;}
+      .wa-float:hover .wa-tooltip{opacity:1; transform:translateX(0);}
+      @media(max-width:640px){.wa-float{right:1rem; bottom:1rem;} .wa-btn{width:52px; height:52px;} .wa-tooltip{display:none;}}
 
       /* ── Animations ── */
       .transition-all{transition-property:all;} .duration-700{transition-duration:700ms;} .duration-1000{transition-duration:1000ms;} .delay-200{transition-delay:200ms;}
@@ -429,6 +445,22 @@ function SectionLabel({ text }) {
   return (<div className="section-label"><div className="section-label-line" /><span className="section-label-text">{text}</span><div className="section-label-line" /></div>)
 }
 
+// ── WhatsApp Floating Button ─────────────────────────────────────────────────
+function WhatsAppFloat() {
+  const openWa = () => {
+    const msg = "Hi A.Materrix Gym! I'd like to know more about memberships and classes."
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+  return (
+    <div className="wa-float">
+      <div className="wa-tooltip">Chat with us on WhatsApp</div>
+      <button className="wa-btn" onClick={openWa} aria-label="Chat on WhatsApp">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9.1 3 3.5 8.6 3.5 15.5c0 2.4.6 4.6 1.8 6.6L3 29l7.1-2.3c1.9 1 4 1.6 6 1.6 6.9 0 12.5-5.6 12.5-12.5S22.9 3 16 3zm0 22.7c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4.2 1.4 1.4-4.1-.2-.4c-1.1-1.7-1.7-3.7-1.7-5.7 0-5.8 4.7-10.5 10.5-10.5S26.5 9.7 26.5 15.5 21.8 25.7 16 25.7zm5.8-7.9c-.3-.2-1.9-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1.1 2.8 1.2 3c.1.2 2.1 3.2 5.1 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4z"/></svg>
+      </button>
+    </div>
+  )
+}
+
 // ── Navbar ──────────────────────────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -448,7 +480,7 @@ function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }} onClick={() => go('home')}>
             <div style={{ width: 38, height: 38, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <div style={{ position: 'absolute', inset: 0, border: '2px solid var(--gold)', transform: 'rotate(45deg)', borderRadius: 4, boxShadow: '0 0 18px var(--gold-glow)' }} />
-              <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 13, position: 'relative', zIndex: 1 }}>A</span>
+              <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 13, position: 'relative', zIndex: 1 }}></span>
             </div>
             <div className="font-bebas" style={{ fontSize: 21, color: '#fff', letterSpacing: '0.06em', lineHeight: 1, whiteSpace: 'nowrap' }}>
               A.MATERRIX <span style={{ color: 'var(--blue)' }}>GYM</span>
@@ -830,7 +862,7 @@ function Trainers() {
 function Schedule() {
   const [ref, inView] = useInView()
   const [day, setDay] = useState(0)
-  const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+  const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT',] // 'SUN'
   const schedule = {
     0: [{ time: '06:00', name: 'Morning HIIT', trainer: 'Priya Sharma', spots: 3 }, { time: '08:00', name: 'Powerlifting', trainer: 'Alex Rodriguez', spots: 5 }, { time: '11:00', name: 'Yoga Fusion', trainer: 'Zara Khan', spots: 8 }, { time: '17:00', name: 'CrossFit', trainer: 'Alex Rodriguez', spots: 2 }, { time: '19:00', name: 'Boxing Pro', trainer: 'Marcus Chen', spots: 6 }],
     1: [{ time: '07:00', name: 'Cycle Blast', trainer: 'Priya Sharma', spots: 4 }, { time: '09:00', name: 'Strength 101', trainer: 'Alex Rodriguez', spots: 7 }, { time: '12:00', name: 'Core Blast', trainer: 'Zara Khan', spots: 9 }, { time: '18:00', name: 'HIIT Extreme', trainer: 'Priya Sharma', spots: 1 }],
@@ -1044,7 +1076,24 @@ function Contact() {
   const [ref, inView] = useInView()
   const [form, setForm] = useState({ name: '', email: '', phone: '', goal: '', message: '' })
   const [sent, setSent] = useState(false)
-  const submit = () => { setSent(true); setTimeout(() => setSent(false), 3500) }
+  const submit = () => {
+    if (!form.name || !form.phone) {
+      alert('Please enter at least your name and phone number.')
+      return
+    }
+    const lines = [
+      '*New Trial Class Request — A.Materrix Gym*',
+      `Name: ${form.name}`,
+      `Email: ${form.email || '-'}`,
+      `Phone: ${form.phone}`,
+      `Goal: ${form.goal || '-'}`,
+      `Message: ${form.message || '-'}`,
+    ]
+    const text = encodeURIComponent(lines.join('\n'))
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank')
+    setSent(true)
+    setTimeout(() => setSent(false), 3500)
+  }
   const info = [
     { icon: '📍', label: 'Address', val: 'G-Block Sarabha Nagar Road, Ludhiana, Punjab, India 141001' },
     { icon: '📞', label: 'Phone', val: '+91 90568 88978, +91 90560 65011' },
@@ -1068,6 +1117,10 @@ function Contact() {
                   <div><div className="font-orbitron" style={{ fontSize: 9, color: 'var(--gold)', letterSpacing: '0.16em', marginBottom: 4 }}>{item.label}</div><div className="font-rajdhani" style={{ color: 'var(--plat-dim)', fontSize: 15 }}>{item.val}</div></div>
                 </div>
               ))}
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noreferrer" className="card-base hover-scale" style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '1rem', textDecoration: 'none', borderColor: 'rgba(37,211,102,0.3)' }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>💬</span>
+                <div><div className="font-orbitron" style={{ fontSize: 9, color: 'var(--wa)', letterSpacing: '0.16em', marginBottom: 4 }}>WHATSAPP</div><div className="font-rajdhani" style={{ color: 'var(--plat-dim)', fontSize: 15 }}>+91 85588 55435</div></div>
+              </a>
             </div>
             <div>
               <div className="font-orbitron" style={{ fontSize: 9, color: 'var(--txt-dim)', letterSpacing: '0.16em', marginBottom: 12 }}>FOLLOW US</div>
@@ -1076,7 +1129,8 @@ function Contact() {
           </div>
           <div className={inView ? 'animate-fadeRight' : 'opacity-0'}>
             <div className="card-base" style={{ padding: 'clamp(1.25rem,4vw,2.25rem)', borderColor: 'rgba(212,175,106,0.18)' }}>
-              <h3 className="font-bebas" style={{ fontSize: 24, color: '#fff', marginBottom: '1.5rem' }}>START YOUR FREE TRIAL</h3>
+              <h3 className="font-bebas" style={{ fontSize: 24, color: '#fff', marginBottom: '0.4rem' }}>START YOUR FREE TRIAL</h3>
+              <p className="font-rajdhani" style={{ color: 'var(--txt-dim)', fontSize: 13, marginBottom: '1.25rem' }}>Submitting sends your details straight to our WhatsApp.</p>
               <div className="grid-2" style={{ marginBottom: '1rem' }}>
                 <input className="input-field" placeholder="Full Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
                 <input className="input-field" placeholder="Email Address" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
@@ -1088,8 +1142,13 @@ function Contact() {
               </select>
               <textarea className="input-field" rows={4} placeholder="Tell us about yourself…" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} style={{ resize: 'none', marginBottom: '1.25rem' }} />
               <Magnetic strength={6}>
-                <button onClick={submit} style={{ width: '100%', padding: '0.9375rem', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer', fontFamily: 'Orbitron, monospace', fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', transition: 'all 0.3s', background: sent ? '#22c55e' : 'var(--gold)', color: '#000', boxShadow: sent ? '0 8px 24px rgba(34,197,94,0.3)' : '0 8px 24px rgba(212,175,106,0.3)' }}>
-                  {sent ? "✓ MESSAGE SENT — WE'LL CALL YOU SOON!" : 'CLAIM FREE TRIAL CLASS'}
+                <button onClick={submit} style={{ width: '100%', padding: '0.9375rem', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer', fontFamily: 'Orbitron, monospace', fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: sent ? '#22c55e' : 'var(--wa)', color: '#05170f', boxShadow: sent ? '0 8px 24px rgba(34,197,94,0.3)' : '0 8px 24px rgba(37,211,102,0.35)' }}>
+                  {sent ? "✓ SENT TO WHATSAPP — WE'LL CALL YOU SOON!" : (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 32 32" fill="#05170f"><path d="M16 3C9.1 3 3.5 8.6 3.5 15.5c0 2.4.6 4.6 1.8 6.6L3 29l7.1-2.3c1.9 1 4 1.6 6 1.6 6.9 0 12.5-5.6 12.5-12.5S22.9 3 16 3zm5.8 14.8c-.3-.2-1.9-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1.1 2.8 1.2 3c.1.2 2.1 3.2 5.1 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4z"/></svg>
+                      SEND VIA WHATSAPP
+                    </>
+                  )}
                 </button>
               </Magnetic>
             </div>
@@ -1170,7 +1229,7 @@ function Footer() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
               <div style={{ width: 36, height: 36, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <div style={{ position: 'absolute', inset: 0, border: '2px solid var(--gold)', transform: 'rotate(45deg)', borderRadius: 3 }} />
-                <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 12, position: 'relative' }}>A</span>
+                <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 12, position: 'relative' }}></span>
               </div>
               <div className="font-bebas" style={{ fontSize: 18, color: '#fff', letterSpacing: '0.05em', lineHeight: 1 }}>A.MATERRIX <span style={{ color: 'var(--blue)' }}>GYM</span></div>
             </div>
@@ -1224,11 +1283,12 @@ export default function App() {
       <Showcase />
       <Trainers />
       <Schedule />
-      <Pricing />
+      {/* <Pricing /> */}
       <Gallery />
       <Testimonials />
       <CTA />
       <Contact />
+      <WhatsAppFloat />
       <Footer />
     </>
   )
