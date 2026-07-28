@@ -6,7 +6,7 @@ const IMGS = {
   hero2:    'https://images.unsplash.com/photo-1584466977773-e625c37cdd50?w=1920&q=90',
   hero3:    'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=1920&q=90',
   about:    'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=900&q=90',
-  about2:   'https://images.unsplash.com/photo-1534438097545-a2c22c57f2ad?w=700&q=90',
+  about2:   'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&q=90',
   trainer1: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=90',
   trainer2: 'https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=600&q=90',
   trainer3: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&q=90',
@@ -448,7 +448,7 @@ function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }} onClick={() => go('home')}>
             <div style={{ width: 38, height: 38, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <div style={{ position: 'absolute', inset: 0, border: '2px solid var(--gold)', transform: 'rotate(45deg)', borderRadius: 4, boxShadow: '0 0 18px var(--gold-glow)' }} />
-              <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 13, position: 'relative', zIndex: 1 }}></span>
+              <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 13, position: 'relative', zIndex: 1 }}>A</span>
             </div>
             <div className="font-bebas" style={{ fontSize: 21, color: '#fff', letterSpacing: '0.06em', lineHeight: 1, whiteSpace: 'nowrap' }}>
               A.MATERRIX <span style={{ color: 'var(--blue)' }}>GYM</span>
@@ -1100,13 +1100,68 @@ function Contact() {
   )
 }
 
+// ── Legal Modal ──────────────────────────────────────────────────────────────
+const LEGAL_CONTENT = {
+  privacy: {
+    title: 'Privacy Policy',
+    updated: 'Last updated: July 2026',
+    sections: [
+      { h: '1. Information We Collect', b: 'When you join A.Materrix Gym or use our website, we may collect your name, email, phone number, date of birth, address, payment details, and fitness goals shared during sign-up, consultations, or class bookings.' },
+      { h: '2. How We Use Your Information', b: 'We use your information to manage your membership, process payments, schedule classes and personal training sessions, send updates about your account, and improve our facilities and services.' },
+      { h: '3. Data Sharing', b: 'We do not sell your personal data. Information may be shared with trainers and staff strictly for delivering your training programs, and with payment processors to complete transactions securely.' },
+      { h: '4. Data Security', b: 'We use reasonable administrative and technical safeguards to protect your data from unauthorized access, loss, or misuse. Payment details are handled through secure, encrypted channels.' },
+      { h: '5. Cookies', b: 'Our website may use cookies to remember your preferences and improve browsing experience. You can disable cookies through your browser settings at any time.' },
+      { h: '6. Your Rights', b: 'You may request access to, correction of, or deletion of your personal data at any time by contacting us at info@amaterrixgym.com.' },
+      { h: '7. Changes to This Policy', b: 'We may update this Privacy Policy periodically. Continued use of our services after changes are posted constitutes acceptance of the revised policy.' },
+    ],
+  },
+  terms: {
+    title: 'Terms & Conditions',
+    updated: 'Last updated: July 2026',
+    sections: [
+      { h: '1. Membership', b: 'Membership is personal and non-transferable. Members must be in suitable physical condition to participate in gym activities and classes offered at A.Materrix Gym.' },
+      { h: '2. Payments & Billing', b: 'Membership fees are billed according to the plan selected (monthly or annual). Fees are non-refundable except where required by law. Annual plans are billed upfront at the discounted rate shown at checkout.' },
+      { h: '3. Cancellations', b: 'Monthly memberships may be cancelled with 30 days\u2019 written notice. Annual memberships are binding for the full term selected at sign-up.' },
+      { h: '4. Class & Session Bookings', b: 'Class spots are reserved on a first-come basis. Members are requested to cancel bookings at least 2 hours in advance to free up spots for others.' },
+      { h: '5. Health & Safety', b: 'Members participate in all training activities at their own risk. We recommend consulting a physician before beginning any new exercise program. A.Materrix Gym is not liable for injuries resulting from improper use of equipment or failure to follow trainer guidance.' },
+      { h: '6. Code of Conduct', b: 'Members are expected to treat staff, trainers, and fellow members with respect. A.Materrix Gym reserves the right to suspend or terminate membership for conduct that violates gym policies.' },
+      { h: '7. Facility Use', b: 'Equipment, locker rooms, and premium amenities (spa, sauna, pool) are provided as per your membership tier and are subject to operating hours and scheduled maintenance.' },
+      { h: '8. Governing Law', b: 'These terms are governed by the laws of India, with jurisdiction in Ludhiana, Punjab.' },
+    ],
+  },
+}
+
+function LegalModal({ type, onClose }) {
+  const data = LEGAL_CONTENT[type]
+  if (!data) return null
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'rgba(4,5,9,0.85)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.25rem' }} onClick={onClose}>
+      <div className="animate-scaleIn card-base" style={{ maxWidth: 720, width: '100%', maxHeight: '82vh', overflowY: 'auto', padding: 'clamp(1.5rem,4vw,2.5rem)', borderColor: 'rgba(212,175,106,0.22)', position: 'relative' }} onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 18, right: 18, width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border)', color: '#fff', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+        <SectionLabel text="Legal" />
+        <h2 className="font-bebas" style={{ fontSize: 'clamp(30px,4vw,42px)', color: '#fff', marginBottom: 4 }}>{data.title}</h2>
+        <p className="font-rajdhani" style={{ color: 'var(--txt-dim)', fontSize: 13, marginBottom: '1.75rem' }}>{data.updated}</p>
+        {data.sections.map((s, i) => (
+          <div key={i} style={{ marginBottom: '1.4rem' }}>
+            <div className="font-orbitron" style={{ fontSize: 11, color: 'var(--gold)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.h}</div>
+            <p className="font-rajdhani" style={{ color: 'var(--txt-muted)', fontSize: 15, lineHeight: 1.7 }}>{s.b}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Footer ──────────────────────────────────────────────────────────────────
 function Footer() {
+  const [legalOpen, setLegalOpen] = useState(null)
   const cols = [
     { title: 'Quick Links', links: ['Home', 'About', 'Services', 'Classes', 'Trainers', 'Pricing', 'Gallery'] },
     { title: 'Programs', links: ['Powerlifting', 'HIIT Training', 'CrossFit', 'Boxing Pro', 'Yoga Fusion', 'Cycle Blast'] },
     { title: 'Support', links: ['FAQs', 'Membership Policy', 'Privacy Policy', 'Terms of Service', 'Contact Us'] },
   ]
+  const legalKeyFor = l => l === 'Privacy Policy' ? 'privacy' : l === 'Terms of Service' ? 'terms' : null
+
   return (
     <footer style={{ background: 'rgba(2,3,4,0.6)', borderTop: '1px solid rgba(212,175,106,0.15)', position: 'relative', zIndex: 2 }}>
       <div className="container" style={{ paddingTop: '4rem', paddingBottom: '2.5rem' }}>
@@ -1115,7 +1170,7 @@ function Footer() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
               <div style={{ width: 36, height: 36, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <div style={{ position: 'absolute', inset: 0, border: '2px solid var(--gold)', transform: 'rotate(45deg)', borderRadius: 3 }} />
-                <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 12, position: 'relative' }}></span>
+                <span className="font-orbitron" style={{ fontWeight: 900, color: 'var(--gold)', fontSize: 12, position: 'relative' }}>A</span>
               </div>
               <div className="font-bebas" style={{ fontSize: 18, color: '#fff', letterSpacing: '0.05em', lineHeight: 1 }}>A.MATERRIX <span style={{ color: 'var(--blue)' }}>GYM</span></div>
             </div>
@@ -1125,7 +1180,16 @@ function Footer() {
             <div key={i}>
               <h4 className="font-orbitron" style={{ fontSize: 9, color: 'var(--gold)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1.25rem' }}>{col.title}</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem', padding: 0, margin: 0 }}>
-                {col.links.map(l => <li key={l}><a href="#" className="font-rajdhani" style={{ color: 'var(--txt-dim)', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--gold)'} onMouseLeave={e => e.target.style.color = 'var(--txt-dim)'}>{l}</a></li>)}
+                {col.links.map(l => {
+                  const key = legalKeyFor(l)
+                  return (
+                    <li key={l}>
+                      <a href="#" onClick={e => { if (key) { e.preventDefault(); setLegalOpen(key) } }} className="font-rajdhani"
+                        style={{ color: 'var(--txt-dim)', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s', cursor: 'pointer' }}
+                        onMouseEnter={e => e.target.style.color = 'var(--gold)'} onMouseLeave={e => e.target.style.color = 'var(--txt-dim)'}>{l}</a>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           ))}
@@ -1135,6 +1199,7 @@ function Footer() {
           <p className="font-orbitron" style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', letterSpacing: '0.16em' }}>BUILT FOR CHAMPIONS</p>
         </div>
       </div>
+      {legalOpen && <LegalModal type={legalOpen} onClose={() => setLegalOpen(null)} />}
     </footer>
   )
 }
