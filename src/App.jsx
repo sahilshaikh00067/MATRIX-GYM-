@@ -1096,9 +1096,9 @@ function Contact() {
   }
   const info = [
     { icon: '📍', label: 'Address', val: 'G-Block Sarabha Nagar Road, Ludhiana, Punjab, India 141001' },
-    { icon: '📞', label: 'Phone', val: '+91 90568 88978, +91 90560 65011' },
-    { icon: '📧', label: 'Email', val: 'info@amaterrixgym.com' },
-    { icon: '🕐', label: 'Hours', val: 'Mon–Fri: 5AM–11PM | Sat–Sun: 6AM–9PM' },
+    { icon: '📞', label: 'Phone', val: '+91 85588 55435' },
+    { icon: '📧', label: 'Email', val: 'ambikacelebrations94@gmail.com' },
+    { icon: '🕐', label: 'Hours', val: 'Mon–Sat: 6AM–12AM ' },
   ]
   return (
     <section id="contact" ref={ref} className="section-py">
@@ -1136,7 +1136,7 @@ function Contact() {
                 <input className="input-field" placeholder="Email Address" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
               </div>
               <input className="input-field" placeholder="Phone Number" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} style={{ marginBottom: '1rem' }} />
-              <select className="input-field" value={form.goal} onChange={e => setForm({ ...form, goal: e.target.value })} style={{ marginBottom: '1rem' }}>
+              <select className="input-field " value={form.goal} onChange={e => setForm({ ...form, goal: e.target.value })} style={{ marginBottom: '1rem' }}>
                 <option value="">Select Your Goal</option>
                 {['Weight Loss', 'Muscle Building', 'Athletic Performance', 'General Fitness', 'Rehabilitation'].map(o => <option key={o}>{o}</option>)}
               </select>
