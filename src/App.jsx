@@ -807,7 +807,7 @@ function Hero() {
               <Magnetic><button className="btn-outline" onClick={() => scrollToId('about')}>EXPLORE MORE</button></Magnetic>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }} className="hide-xs">
-              {[['users', '5000+', 'Members'], ['dumbbell', '50+', 'Trainers'], ['award', '15+', 'Years']].map(([ic, n, l], i) => <span key={l} className="hero-chip" style={{ animationDelay: `${0.5 + i * 0.15}s` }}><Icon name={ic} size={15} style={{ color: 'var(--cbl)' }} /><b>{n}</b>{l}</span>)}
+              {[['users', '500+', 'Members'], ['dumbbell', '20+', 'Trainers'], ['award', '15+', 'Years']].map(([ic, n, l], i) => <span key={l} className="hero-chip" style={{ animationDelay: `${0.5 + i * 0.15}s` }}><Icon name={ic} size={15} style={{ color: 'var(--cbl)' }} /><b>{n}</b>{l}</span>)}
             </div>
           </div>
         </div>
